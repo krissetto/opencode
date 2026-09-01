@@ -831,6 +831,16 @@ it.instance(
   { config: { small_model: "anthropic/not-a-real-model" } },
 )
 
+test("provider.sort prioritizes base models over modes", () => {
+  const models = [
+    { id: "preferred-model-fast", api: { id: "preferred-model" } },
+    { id: "preferred-model-pro", api: { id: "preferred-model" } },
+    { id: "preferred-model", api: { id: "preferred-model" } },
+  ]
+
+  expect(Provider.sort(models)[0].id).toBe("preferred-model")
+})
+
 test("provider.sort prioritizes preferred models", () => {
   const models = [
     { id: "random-model", name: "Random" },

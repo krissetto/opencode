@@ -1130,7 +1130,9 @@ export function toPublicInfo(provider: Info): Info {
   )
 }
 
-export function defaultModelIDs<T extends { models: Record<string, { id: string }> }>(providers: Record<string, T>) {
+export function defaultModelIDs<
+  T extends { models: Record<string, { id: string; api?: { id: string } }> },
+>(providers: Record<string, T>) {
   return mapValues(providers, (item) => sort(Object.values(item.models))[0].id)
 }
 
@@ -2042,10 +2044,11 @@ const layer = Layer.effect(
 
 const priority = ["gpt-5", "claude-sonnet-4", "big-pickle", "gemini-3-pro"]
 const smallModelFamilyPriority = ["gemini-flash", "gpt-nano", "claude-haiku"]
-export function sort<T extends { id: string }>(models: T[]) {
+export function sort<T extends { id: string; api?: { id: string } }>(models: T[]) {
   return sortBy(
     models,
     [(model) => priority.findIndex((filter) => model.id.includes(filter)), "desc"],
+    [(model) => (model.api === undefined || model.id === model.api.id ? 1 : 0), "desc"],
     [(model) => (model.id.includes("latest") ? 0 : 1), "asc"],
     [(model) => model.id, "desc"],
   )
